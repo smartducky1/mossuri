@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>MOSSURI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Skranji:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="top-character">
+      <button class="nav-arrow" id="prevChar" aria-label="Previous character">◀</button>
+      <div class="character-window"><img id="selectorImage" src="/assets/smart.jpg" alt="Smart" /></div>
+      <button class="nav-arrow" id="nextChar" aria-label="Next character">▶</button>
+    </section>
+
+    <section class="checker">
+      <input id="checkWallet" autocomplete="off" placeholder="Paste EVM" aria-label="Paste EVM wallet" />
+      <button id="checkBtn">CHECK</button>
+      <div id="checkResult" class="check-result" aria-live="polite"></div>
+    </section>
+
+    <section class="tasks panel">
+      <div class="task-title">Follow X</div>
+      <div class="task-row follow-row">
+        <input id="username" autocomplete="off" placeholder="Drop your x username" />
+        <button id="followBtn">Follow</button>
+      </div>
+
+      <div class="task-row">
+        <button class="task-action" id="likeBtn">Like and RT pinned post</button>
+        <button class="go-btn" id="likeGo">GO</button>
+      </div>
+
+      <div class="task-label">QT pinned post with your selected character</div>
+      <div class="task-row full-row">
+        <input id="quoteUrl" placeholder="Link to QT https://x.com/status..." />
+      </div>
+
+      <div class="task-label">Tag 3 friends in pinned post comment</div>
+      <div class="task-row full-row">
+        <input id="tagUrl" placeholder="Link to comment https://x.com/status..." />
+      </div>
+
+      <div class="task-row wallet-row">
+        <div class="wallet-label">Submit EVM wallet</div>
+        <input id="wallet" autocomplete="off" placeholder="0x......" />
+      </div>
+
+      <button class="register" id="registerBtn">REGISTER</button>
+    </section>
+
+    <section class="personality-card">
+      <div class="personality-image-wrap"><img id="personalityImage" src="/assets/smart.jpg" alt="Smart personality" /></div>
+      <div class="personality-footer"><span>Personality</span><strong id="personalityName">Smart</strong></div>
+      <button class="download" id="downloadBtn" aria-label="Download selected character">⇩</button>
+    </section>
+
+    <section class="board">
+      <h2>Mossuris Board</h2>
+      <div class="board-box">
+        <div class="board-head"><span>Username</span><span>Wallet</span></div>
+        <div id="boardRows" class="board-rows"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <div class="modal hidden" id="successModal" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <button class="modal-close" id="closeModal" aria-label="Close">×</button>
+      <img src="/assets/success-popup.png" alt="Success" />
+      <div class="modal-title">Application received</div>
+      <div class="modal-subtitle">You're on the list!</div>
+    </div>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>
