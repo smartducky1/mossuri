@@ -1,6 +1,12 @@
 /* =========================================================
    MOSSURI
-   ========================================================= */
+   Main frontend logic
+========================================================= */
+
+
+/* =========================================================
+   CHARACTER DATA
+========================================================= */
 
 const characters = [
   {
@@ -17,131 +23,145 @@ const characters = [
   }
 ];
 
-let selected = 0;
+let currentCharacter = 0;
 
 
 /* =========================================================
-   HELPERS
-   ========================================================= */
+   DOM ELEMENTS
+========================================================= */
 
-const $ = (id) => document.getElementById(id);
+const characterImage =
+  document.getElementById("characterImage");
 
+const selectedPersonalityImage =
+  document.getElementById("selectedPersonalityImage");
 
-function validEvm(wallet) {
-  return /^0x[a-fA-F0-9]{40}$/.test(
-    wallet.trim()
-  );
-}
+const selectedPersonalityName =
+  document.getElementById("selectedPersonalityName");
 
+const prevCharacter =
+  document.getElementById("prevCharacter");
 
-function escapeHtml(value) {
-  return String(value).replace(
-    /[&<>'"]/g,
-    (char) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      "'": "&#39;",
-      '"': "&quot;"
-    })[char]
-  );
-}
+const nextCharacter =
+  document.getElementById("nextCharacter");
 
-
-function toast(message) {
-  const element = $("toast");
-
-  element.textContent = message;
-
-  element.classList.add("show");
-
-  clearTimeout(toast.timer);
-
-  toast.timer = setTimeout(() => {
-    element.classList.remove("show");
-  }, 2400);
-}
+const downloadCharacter =
+  document.getElementById("downloadCharacter");
 
 
 /* =========================================================
-   CHARACTER SELECTOR
-   ========================================================= */
+   CHARACTER RENDER
+========================================================= */
 
 function renderCharacter() {
 
-  const character = characters[selected];
+  const character = characters[currentCharacter];
 
-  $("selectorImage").src = character.file;
+  if (!character) {
+    return;
+  }
 
-  $("selectorImage").alt =
-    `${character.name} personality`;
+  if (characterImage) {
+    characterImage.src = character.file;
+    characterImage.alt =
+      `${character.name} personality`;
+  }
 
-  $("personalityImage").src =
-    character.file;
+  if (selectedPersonalityImage) {
+    selectedPersonalityImage.src = character.file;
+    selectedPersonalityImage.alt =
+      `${character.name} personality`;
+  }
 
-  $("personalityImage").alt =
-    `${character.name} personality`;
-
-  $("personalityName").textContent =
-    character.name;
+  if (selectedPersonalityName) {
+    selectedPersonalityName.textContent =
+      character.name.toUpperCase();
+  }
 }
 
 
-$("prevChar").addEventListener(
-  "click",
-  () => {
+/* =========================================================
+   PREVIOUS CHARACTER
+========================================================= */
 
-    selected =
-      (selected - 1 + characters.length)
-      % characters.length;
+if (prevCharacter) {
 
-    renderCharacter();
-  }
-);
+  prevCharacter.addEventListener("click", () => {
 
+    currentCharacter--;
 
-$("nextChar").addEventListener(
-  "click",
-  () => {
-
-    selected =
-      (selected + 1)
-      % characters.length;
+    if (currentCharacter < 0) {
+      currentCharacter =
+        characters.length - 1;
+    }
 
     renderCharacter();
-  }
-);
+
+  });
+
+}
+
+
+/* =========================================================
+   NEXT CHARACTER
+========================================================= */
+
+if (nextCharacter) {
+
+  nextCharacter.addEventListener("click", () => {
+
+    currentCharacter++;
+
+    if (currentCharacter >= characters.length) {
+      currentCharacter = 0;
+    }
+
+    renderCharacter();
+
+  });
+
+}
 
 
 /* =========================================================
    DOWNLOAD CHARACTER
-   ========================================================= */
+========================================================= */
 
-$("downloadBtn").addEventListener(
-  "click",
-  async () => {
+if (downloadCharacter) {
+
+  downloadCharacter.addEventListener("click", async () => {
 
     const character =
-      characters[selected];
+      characters[currentCharacter];
+
+    if (!character) {
+      return;
+    }
 
     try {
 
       const response =
         await fetch(character.file);
 
+      if (!response.ok) {
+        throw new Error(
+          "Image could not be loaded."
+        );
+      }
+
       const blob =
         await response.blob();
 
-      const url =
+      const blobUrl =
         URL.createObjectURL(blob);
 
       const link =
         document.createElement("a");
 
-      link.href = url;
+      link.href = blobUrl;
 
       link.download =
-        `MOSSURI-${character.name}.jpg`;
+        `${character.name.toLowerCase()}.jpg`;
 
       document.body.appendChild(link);
 
@@ -149,198 +169,500 @@ $("downloadBtn").addEventListener(
 
       link.remove();
 
-      URL.revokeObjectURL(url);
+      URL.revokeObjectURL(blobUrl);
 
     } catch (error) {
 
+      console.error(error);
+
       window.open(
         character.file,
-        "_blank"
+        "_blank",
+        "noopener,noreferrer"
       );
+
     }
-  }
-);
+
+  });
+
+}
 
 
 /* =========================================================
-   X TASKS
-   ========================================================= */
+   EVM CHECKER
+========================================================= */
 
-const X_URL =
-  "https://x.com/mossuris";
+const checkWallet =
+  document.getElementById("checkWallet");
 
+const checkBtn =
+  document.getElementById("checkBtn");
 
-document.querySelectorAll(
-  'a[href="https://x.com/mossuris"]'
-).forEach((link) => {
-
-  link.addEventListener(
-    "click",
-    () => {
-      // Normal link behaviour.
-    }
-  );
-
-});
+const checkResult =
+  document.getElementById("checkResult");
 
 
-/* =========================================================
-   WALLET CHECKER
-   ========================================================= */
+function showCheckResult(message, type) {
 
-async function checkWallet() {
-
-  const wallet =
-    $("checkWallet")
-      .value
-      .trim();
-
-  const result =
-    $("checkResult");
-
-  if (!validEvm(wallet)) {
-
-    result.textContent =
-      "🔴 NO — wallet is not on the list";
-
-    result.className =
-      "status-result no";
-
+  if (!checkResult) {
     return;
   }
 
-  result.textContent =
-    "CHECKING...";
+  checkResult.textContent = message;
 
-  result.className =
-    "status-result";
+  checkResult.className =
+    `check-result ${type}`;
+}
 
 
-  try {
+/* =========================================================
+   CHECK WALLET
+========================================================= */
 
-    const response =
-      await fetch(
-        "/api/check",
-        {
+if (checkBtn) {
+
+  checkBtn.addEventListener("click", async () => {
+
+    const wallet =
+      checkWallet.value.trim();
+
+    if (!wallet) {
+
+      showCheckResult(
+        "Paste your wallet first.",
+        "no"
+      );
+
+      return;
+    }
+
+
+    checkBtn.disabled = true;
+
+    checkBtn.textContent = "CHECKING";
+
+
+    try {
+
+      const response =
+        await fetch("/api/check", {
+
           method: "POST",
 
           headers: {
-            "content-type":
+            "Content-Type":
               "application/json"
           },
 
           body: JSON.stringify({
             wallet
           })
-        }
+
+        });
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          "Unable to check wallet."
+        );
+
+      }
+
+
+      if (data.eligible === true) {
+
+        showCheckResult(
+          "🟢 YES — wallet is on the list.",
+          "yes"
+        );
+
+      } else {
+
+        showCheckResult(
+          "🔴 NO — wallet is not on the list.",
+          "no"
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      showCheckResult(
+        error.message ||
+        "Unable to check wallet.",
+        "no"
       );
 
+    } finally {
 
-    const data =
-      await response.json();
+      checkBtn.disabled = false;
 
+      checkBtn.textContent = "CHECK";
 
-    if (!response.ok) {
-      throw new Error(
-        data.error ||
-        "Unable to check wallet"
-      );
     }
 
+  });
 
-    if (data.onList) {
-
-      result.textContent =
-        "🟢 YES — wallet is on the list";
-
-      result.className =
-        "status-result yes";
-
-    } else {
-
-      result.textContent =
-        "🔴 NO — wallet is not on the list";
-
-      result.className =
-        "status-result no";
-    }
-
-  } catch (error) {
-
-    result.textContent =
-      "🔴 NO — wallet is not on the list";
-
-    result.className =
-      "status-result no";
-  }
 }
-
-
-$("checkBtn").addEventListener(
-  "click",
-  checkWallet
-);
-
-
-$("checkWallet").addEventListener(
-  "keydown",
-  (event) => {
-
-    if (event.key === "Enter") {
-      event.preventDefault();
-
-      checkWallet();
-    }
-  }
-);
 
 
 /* =========================================================
-   SUCCESS POPUP
-   ========================================================= */
+   FORM ELEMENTS
+========================================================= */
 
-function showSuccess() {
+const usernameInput =
+  document.getElementById("username");
 
-  /*
-   * Always use the supplied success-popup image.
-   * Add cache-busting so browser caching doesn't
-   * cause an old broken image to remain visible.
-   */
+const walletInput =
+  document.getElementById("wallet");
 
-  const image =
-    $("successImage");
+const quoteUrlInput =
+  document.getElementById("quoteUrl");
 
-  image.src =
-    `/assets/success-popup.png?v=${Date.now()}`;
+const tagUrlInput =
+  document.getElementById("tagUrl");
 
-  $("successOverlay").hidden = false;
-}
+const registerBtn =
+  document.getElementById("registerBtn");
 
-
-function closeSuccess() {
-
-  $("successOverlay").hidden = true;
-}
+const formMessage =
+  document.getElementById("formMessage");
 
 
-$("closeSuccess").addEventListener(
-  "click",
-  closeSuccess
-);
+/* =========================================================
+   MESSAGE
+========================================================= */
 
+function showFormMessage(
+  message,
+  type = ""
+) {
 
-$("successOverlay").addEventListener(
-  "click",
-  (event) => {
-
-    if (
-      event.target ===
-      $("successOverlay")
-    ) {
-      closeSuccess();
-    }
+  if (!formMessage) {
+    return;
   }
-);
+
+  formMessage.textContent = message;
+
+  formMessage.className =
+    `form-message ${type}`;
+
+}
+
+
+/* =========================================================
+   WALLET VALIDATION
+========================================================= */
+
+function isValidEvmWallet(wallet) {
+
+  return /^0x[a-fA-F0-9]{40}$/.test(wallet);
+
+}
+
+
+/* =========================================================
+   URL VALIDATION
+========================================================= */
+
+function isValidUrl(value) {
+
+  if (!value) {
+    return false;
+  }
+
+  try {
+
+    const url =
+      new URL(value);
+
+    return (
+      url.protocol === "http:" ||
+      url.protocol === "https:"
+    );
+
+  } catch {
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================
+   REGISTER
+========================================================= */
+
+if (registerBtn) {
+
+  registerBtn.addEventListener(
+    "click",
+    async () => {
+
+      showFormMessage("");
+
+      const username =
+        usernameInput.value.trim();
+
+      const wallet =
+        walletInput.value.trim();
+
+      const quoteUrl =
+        quoteUrlInput.value.trim();
+
+      const tagUrl =
+        tagUrlInput.value.trim();
+
+      const personality =
+        characters[currentCharacter].name;
+
+
+      /* Username */
+
+      if (!username) {
+
+        showFormMessage(
+          "Please enter your X username.",
+          "error"
+        );
+
+        usernameInput.focus();
+
+        return;
+      }
+
+
+      /* Wallet */
+
+      if (!isValidEvmWallet(wallet)) {
+
+        showFormMessage(
+          "Please enter a valid EVM wallet.",
+          "error"
+        );
+
+        walletInput.focus();
+
+        return;
+      }
+
+
+      /* Quote URL */
+
+      if (!isValidUrl(quoteUrl)) {
+
+        showFormMessage(
+          "Please paste your quote tweet link.",
+          "error"
+        );
+
+        quoteUrlInput.focus();
+
+        return;
+      }
+
+
+      /* Tag URL */
+
+      if (!isValidUrl(tagUrl)) {
+
+        showFormMessage(
+          "Please paste your tag post link.",
+          "error"
+        );
+
+        tagUrlInput.focus();
+
+        return;
+      }
+
+
+      /* Loading */
+
+      registerBtn.disabled = true;
+
+      registerBtn.textContent =
+        "SUBMITTING";
+
+
+      try {
+
+        const response =
+          await fetch("/api/submit", {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              username,
+
+              wallet,
+
+              personality,
+
+              quoteUrl,
+
+              tagUrl
+
+            })
+
+          });
+
+
+        const data =
+          await response.json();
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.error ||
+            "We could not save your application."
+          );
+
+        }
+
+
+        /* Success */
+
+        showFormMessage(
+          "Application received!",
+          "success"
+        );
+
+
+        showSuccessModal();
+
+
+        /* Refresh board */
+
+        loadBoard();
+
+
+        /* Clear form */
+
+        usernameInput.value = "";
+
+        walletInput.value = "";
+
+        quoteUrlInput.value = "";
+
+        tagUrlInput.value = "";
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        showFormMessage(
+          error.message ||
+          "We could not save your application.",
+          "error"
+        );
+
+      } finally {
+
+        registerBtn.disabled = false;
+
+        registerBtn.textContent =
+          "REGISTER";
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SUCCESS MODAL
+========================================================= */
+
+const successModal =
+  document.getElementById("successModal");
+
+const successImage =
+  document.getElementById("successImage");
+
+const closeModal =
+  document.getElementById("closeModal");
+
+const modalBackdrop =
+  document.querySelector(".modal-backdrop");
+
+
+const successImages = [
+  "/assets/success-popup.png"
+];
+
+
+function showSuccessModal() {
+
+  if (!successModal) {
+    return;
+  }
+
+  const randomImage =
+    successImages[
+      Math.floor(
+        Math.random() *
+        successImages.length
+      )
+    ];
+
+  if (successImage) {
+    successImage.src = randomImage;
+  }
+
+  successModal.classList.remove("hidden");
+
+}
+
+
+function hideSuccessModal() {
+
+  if (!successModal) {
+    return;
+  }
+
+  successModal.classList.add("hidden");
+
+}
+
+
+if (closeModal) {
+
+  closeModal.addEventListener(
+    "click",
+    hideSuccessModal
+  );
+
+}
+
+
+if (modalBackdrop) {
+
+  modalBackdrop.addEventListener(
+    "click",
+    hideSuccessModal
+  );
+
+}
 
 
 document.addEventListener(
@@ -349,234 +671,136 @@ document.addEventListener(
 
     if (
       event.key === "Escape" &&
-      !$("successOverlay").hidden
+      successModal &&
+      !successModal.classList.contains("hidden")
     ) {
-      closeSuccess();
+
+      hideSuccessModal();
+
     }
+
   }
 );
 
 
 /* =========================================================
-   REGISTER / SUBMIT
-   ========================================================= */
+   BOARD
+========================================================= */
 
-async function register(event) {
+const boardBody =
+  document.getElementById("boardBody");
 
-  event.preventDefault();
+const boardPrev =
+  document.getElementById("boardPrev");
 
+const boardNext =
+  document.getElementById("boardNext");
 
-  const username =
-    $("username")
-      .value
-      .trim()
-      .replace(/^@/, "");
 
+function escapeHtml(value) {
 
-  const wallet =
-    $("wallet")
-      .value
-      .trim();
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
-
-  const quoteUrl =
-    $("quoteUrl")
-      .value
-      .trim();
-
-
-  const tagUrl =
-    $("tagUrl")
-      .value
-      .trim();
-
-
-  const serverError =
-    $("serverError");
-
-
-  serverError.textContent = "";
-
-
-  if (!username) {
-
-    toast(
-      "Enter your X username"
-    );
-
-    $("username").focus();
-
-    return;
-  }
-
-
-  if (!validEvm(wallet)) {
-
-    toast(
-      "Enter a valid EVM wallet"
-    );
-
-    $("wallet").focus();
-
-    return;
-  }
-
-
-  if (!quoteUrl) {
-
-    toast(
-      "Add your Quote Tweet link"
-    );
-
-    $("quoteUrl").focus();
-
-    return;
-  }
-
-
-  if (!tagUrl) {
-
-    toast(
-      "Add your comment link"
-    );
-
-    $("tagUrl").focus();
-
-    return;
-  }
-
-
-  const button =
-    $("registerBtn");
-
-  button.disabled = true;
-
-  button.textContent =
-    "SENDING...";
-
-
-  try {
-
-    const payload = {
-
-      username,
-
-      wallet,
-
-      personality:
-        characters[selected].name,
-
-      quoteUrl,
-
-      tagUrl
-
-    };
-
-
-    const response =
-      await fetch(
-        "/api/submit",
-        {
-          method: "POST",
-
-          headers: {
-            "content-type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify(payload)
-        }
-      );
-
-
-    let data = {};
-
-    try {
-
-      data =
-        await response.json();
-
-    } catch {
-      data = {};
-    }
-
-
-    if (
-      !response.ok ||
-      !data.ok
-    ) {
-
-      throw new Error(
-        data.error ||
-        "Could not save your application."
-      );
-    }
-
-
-    /*
-     * Clear form.
-     */
-
-    $("username").value = "";
-
-    $("wallet").value = "";
-
-    $("quoteUrl").value = "";
-
-    $("tagUrl").value = "";
-
-
-    /*
-     * Show success popup.
-     */
-
-    showSuccess();
-
-
-    /*
-     * Refresh board.
-     */
-
-    await loadBoard();
-
-
-  } catch (error) {
-
-    const message =
-      error.message ||
-      "Could not save your application.";
-
-    serverError.textContent =
-      message;
-
-    toast(message);
-
-  } finally {
-
-    button.disabled = false;
-
-    button.textContent =
-      "REGISTER";
-  }
 }
 
 
-$("applicationForm").addEventListener(
-  "submit",
-  register
-);
+function shortWallet(wallet) {
+
+  if (!wallet) {
+    return "";
+  }
+
+  if (wallet.length <= 14) {
+    return wallet;
+  }
+
+  return (
+    wallet.slice(0, 7) +
+    "..." +
+    wallet.slice(-5)
+  );
+
+}
 
 
-/* =========================================================
-   MOSSURIS BOARD
-   ========================================================= */
+function renderBoard(rows) {
+
+  if (!boardBody) {
+    return;
+  }
+
+
+  if (!Array.isArray(rows) || rows.length === 0) {
+
+    boardBody.innerHTML = `
+      <div class="board-empty">
+        No applications yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  boardBody.innerHTML =
+    rows.map((row) => {
+
+      const username =
+        row.username ||
+        row.Username ||
+        "";
+
+      const wallet =
+        row.wallet ||
+        row.Wallet ||
+        "";
+
+      const personality =
+        row.personality ||
+        row.Personality ||
+        "";
+
+
+      return `
+        <div class="board-row">
+
+          <div>
+            ${escapeHtml(username)}
+          </div>
+
+          <div
+            class="board-wallet"
+            title="${escapeHtml(wallet)}"
+          >
+            ${escapeHtml(
+              shortWallet(wallet)
+            )}
+          </div>
+
+          <div>
+            ${escapeHtml(
+              personality
+            )}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
 
 async function loadBoard() {
 
-  const container =
-    $("boardRows");
-
+  if (!boardBody) {
+    return;
+  }
 
   try {
 
@@ -594,116 +818,99 @@ async function loadBoard() {
       await response.json();
 
 
-    if (
-      !response.ok ||
-      !data.ok
-    ) {
+    if (!response.ok) {
+
       throw new Error(
         data.error ||
-        "Could not load board"
+        "Could not load board."
       );
+
     }
 
 
     const rows =
-      Array.isArray(data.rows)
-        ? data.rows
-        : [];
+      Array.isArray(data)
+        ? data
+        : (
+            data.rows ||
+            data.applications ||
+            []
+          );
 
 
-    if (!rows.length) {
-
-      container.innerHTML = `
-        <div class="tr">
-          <span>—</span>
-          <span>—</span>
-          <span>—</span>
-        </div>
-      `;
-
-      return;
-    }
-
-
-    container.innerHTML =
-      rows
-        .map((row) => {
-
-          return `
-            <div class="tr">
-
-              <span>
-                ${escapeHtml(
-                  row.username ||
-                  row.xUsername ||
-                  ""
-                )}
-              </span>
-
-              <span>
-                ${escapeHtml(
-                  row.wallet ||
-                  ""
-                )}
-              </span>
-
-              <span>
-                ${escapeHtml(
-                  row.personality ||
-                  ""
-                )}
-              </span>
-
-            </div>
-          `;
-
-        })
-        .join("");
-
+    renderBoard(rows);
 
   } catch (error) {
 
-    /*
-     * Keep board empty if the API
-     * isn't configured yet.
-     */
+    console.error(
+      "Board error:",
+      error
+    );
 
-    container.innerHTML = "";
+    if (boardBody) {
+
+      boardBody.innerHTML = `
+        <div class="board-empty">
+          Board unavailable.
+        </div>
+      `;
+
+    }
+
   }
+
 }
 
 
 /* =========================================================
    BOARD SCROLL BUTTONS
-   ========================================================= */
+========================================================= */
 
-$("boardUp").addEventListener(
-  "click",
-  () => {
+if (boardPrev) {
 
-    $("boardRows").scrollBy({
-      top: -220,
-      behavior: "smooth"
-    });
-  }
-);
+  boardPrev.addEventListener(
+    "click",
+    () => {
+
+      if (!boardBody) {
+        return;
+      }
+
+      boardBody.scrollBy({
+        top: -250,
+        behavior: "smooth"
+      });
+
+    }
+  );
+
+}
 
 
-$("boardDown").addEventListener(
-  "click",
-  () => {
+if (boardNext) {
 
-    $("boardRows").scrollBy({
-      top: 220,
-      behavior: "smooth"
-    });
-  }
-);
+  boardNext.addEventListener(
+    "click",
+    () => {
+
+      if (!boardBody) {
+        return;
+      }
+
+      boardBody.scrollBy({
+        top: 250,
+        behavior: "smooth"
+      });
+
+    }
+  );
+
+}
 
 
 /* =========================================================
-   START
-   ========================================================= */
+   INITIALIZE
+========================================================= */
 
 renderCharacter();
 
