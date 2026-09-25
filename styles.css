@@ -1,7 +1,4 @@
-/* =========================================================
-   MOSSURI
-   Figma-style task page
-========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Skranji:wght@400;700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -10,42 +7,62 @@
 html,
 body {
   margin: 0;
-  padding: 0;
   width: 100%;
+  height: 100%;
   min-height: 100%;
 }
 
 body {
+  overflow: hidden;
   background: #bce900;
   color: #000;
-
-  font-family: "Skranji", cursive;
-
-  overflow-x: hidden;
 }
 
 
 /* =========================================================
    MAIN FIGMA CANVAS
-========================================================= */
+   ========================================================= */
 
 .task-page {
-  position: relative;
+  --desktop-scale: min(
+    calc(100vw / 1728px),
+    calc(100vh / 1117px)
+  );
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
 
   width: 1728px;
   height: 1117px;
 
-  margin: 0 auto;
+  margin: 0;
+  padding: 0;
+
+  transform:
+    translate(-50%, -50%)
+    scale(var(--desktop-scale));
+
+  transform-origin: center center;
+
+  overflow: hidden;
 
   background: #bce900;
 
-  transform-origin: top center;
+  font-family: 'Skranji', cursive;
+}
+
+.task-page button,
+.task-page input,
+.task-page a {
+  font-family: inherit;
 }
 
 
 /* =========================================================
    CHARACTER CAROUSEL
-========================================================= */
+   ========================================================= */
 
 .character-carousel {
   position: absolute;
@@ -56,168 +73,169 @@ body {
   width: 348px;
   height: 246px;
 
+  background: #fff;
+
+  border: 7px solid #000;
+  border-radius: 40px;
+
+  box-shadow: 0 8px 0 #000;
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
-.character-frame {
-  width: 270px;
-  height: 246px;
+.character-carousel > button {
+  width: 55px;
+  height: 70px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #000;
+
+  font-family: Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.character-window {
+  width: 146px;
+  height: 132px;
+
+  border: 8px solid #000;
+  border-radius: 24px;
 
   overflow: hidden;
+
+  background: #dfffd7;
+
+  flex: 0 0 auto;
 }
 
-.character-frame img {
+.character-window img {
   width: 100%;
   height: 100%;
 
-  object-fit: contain;
-
   display: block;
-}
 
-.character-arrow {
-  width: 42px;
-  height: 42px;
-
-  border: 0;
-  border-radius: 50%;
-
-  background: #000;
-  color: #fff;
-
-  font-family: Arial, sans-serif;
-  font-size: 30px;
-  line-height: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-
-  padding: 0;
-}
-
-.character-arrow:hover {
-  transform: scale(0.96);
+  object-fit: cover;
 }
 
 
 /* =========================================================
-   EVM CHECKER
-========================================================= */
+   WALLET CHECKER
+   ========================================================= */
 
-.checker {
+.status-area {
   position: absolute;
 
   left: 840px;
   top: 139px;
 
   width: 628px;
-  height: 70px;
+  height: 99px;
+}
+
+.status-check {
+  width: 100%;
+  height: 100%;
 
   display: flex;
   align-items: center;
+  justify-content: space-between;
 
-  background: #fff;
-
-  border: 4px solid #000;
-  border-radius: 18px;
-
-  padding: 5px;
-
-  box-shadow: none;
+  gap: 22px;
 }
 
-.checker input {
-  flex: 1;
-
-  min-width: 0;
-
-  height: 56px;
-
-  border: 0;
-  outline: 0;
-
-  background: transparent;
-
-  padding: 0 18px;
-
-  font-family: "Skranji", cursive;
-
-  font-size: 19px;
-  font-weight: 400;
-
-  color: #000;
-}
-
-.checker input::placeholder {
-  color: #999;
-
-  opacity: 1;
-}
-
-.checker button {
-  width: 105px;
-  height: 56px;
-
-  flex-shrink: 0;
-
-  border: 0;
-  border-radius: 13px;
-
-  background: #000;
-  color: #fff;
-
-  font-family: "Skranji", cursive;
-
-  font-size: 16px;
-  font-weight: 400;
-
-  cursor: pointer;
-
-  padding: 0;
-}
-
-.checker button:hover {
-  opacity: 0.9;
-}
-
-.checker button:active {
-  transform: scale(0.98);
-}
-
-.check-result {
-  position: absolute;
-
-  left: 0;
-  top: 78px;
-
-  font-family: "Skranji", cursive;
-
-  font-size: 14px;
+.status-check span {
+  font-size: 43px;
+  line-height: 1;
 
   white-space: nowrap;
 }
 
-.check-result.yes {
+.status-check input {
+  width: 341px;
+  height: 99px;
+
+  flex: 0 0 341px;
+
+  border: 7px solid #000;
+  border-radius: 27px;
+
+  padding: 0 25px;
+
+  background: #fff;
+  color: #000;
+
+  outline: none;
+
+  font-size: 28px;
+}
+
+.status-check input::placeholder {
+  color: #858585;
+  opacity: 1;
+}
+
+.status-check button {
+  width: 130px;
+  height: 70px;
+
+  flex: 0 0 130px;
+
+  border: 6px solid #000;
+  border-radius: 20px;
+
+  background: #000;
+  color: #fff;
+
+  font-size: 21px;
+
+  cursor: pointer;
+}
+
+.status-result {
+  position: absolute;
+
+  right: 0;
+  top: 111px;
+
+  padding: 11px 21px;
+
+  background: #fff;
+
+  border: 5px solid #000;
+  border-radius: 15px;
+
+  font-size: 24px;
+
+  box-shadow: 5px 5px #000;
+
+  z-index: 30;
+}
+
+.status-result:empty {
+  display: none;
+}
+
+.status-result.yes {
   color: #168500;
 }
 
-.check-result.no {
-  color: #e00000;
+.status-result.no {
+  color: #e40000;
 }
 
 
 /* =========================================================
-   TASK CARD
-========================================================= */
+   TASK FORM
+   ========================================================= */
 
 .task-card {
   position: absolute;
@@ -228,178 +246,151 @@ body {
   width: 511px;
   height: 623px;
 
+  padding: 18px 28px 24px;
+
   background: #fff;
 
-  border: 4px solid #000;
-  border-radius: 28px;
+  border: 7px solid #000;
+  border-radius: 37px;
 
-  padding: 34px 32px;
+  box-shadow: 0 8px 0 #000;
 
   overflow: hidden;
 }
 
-.task-title {
-  margin: 0;
+.task-card form {
+  width: 100%;
+  height: 100%;
 
-  font-size: 39px;
-  line-height: 1;
+  display: flex;
+  flex-direction: column;
 
-  font-weight: 700;
+  justify-content: space-between;
 }
-
-.task-subtitle {
-  margin: 8px 0 27px;
-
-  font-size: 15px;
-}
-
-
-/* =========================================================
-   TASK ROWS
-========================================================= */
 
 .task-row {
   width: 100%;
+}
 
-  margin-bottom: 15px;
+.task-row label {
+  display: block;
+
+  margin: 0 0 7px 13px;
+
+  font-size: 16px;
+  line-height: 1.05;
+}
+
+.dark-row {
+  width: 100%;
+  min-height: 61px;
+
+  padding: 8px;
+
+  background: #000;
+
+  border-radius: 16px;
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
-
-  gap: 15px;
+  gap: 8px;
 }
 
-.task-label {
-  font-size: 15px;
-  line-height: 1.2;
+.dark-row input {
+  flex: 1;
 
-  flex-shrink: 0;
-}
+  min-width: 0;
 
-.task-action {
-  min-width: 145px;
+  height: 43px;
 
-  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
 
-  border: 3px solid #000;
-  border-radius: 11px;
+  padding: 0 14px;
 
+  background: #fff;
   color: #000;
-  background: #bce900;
 
-  text-decoration: none;
-
-  text-align: center;
-
-  font-family: "Skranji", cursive;
+  outline: none;
 
   font-size: 13px;
 }
 
-.task-action:hover {
-  background: #000;
-  color: #fff;
+.dark-row input::placeholder {
+  color: #8b8b8b;
+  opacity: 1;
 }
 
-
-/* =========================================================
-   FORM INPUTS
-========================================================= */
-
-.task-input-row {
-  align-items: center;
-}
-
-.task-input-row input {
-  width: 265px;
+.dark-row a {
   height: 43px;
 
-  border: 3px solid #000;
-  border-radius: 11px;
+  min-width: 91px;
 
-  outline: none;
+  padding: 0 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background: #fff;
+  color: #000;
 
-  padding: 0 13px;
+  border-radius: 10px;
 
-  font-family: "Skranji", cursive;
+  text-decoration: none;
+
+  font-size: 14px;
+
+  white-space: nowrap;
+}
+
+.single {
+  justify-content: flex-end;
+}
+
+.single a {
+  min-width: 92px;
+}
+
+.server-error {
+  margin: 4px 0;
+
+  text-align: center;
+
+  color: #a00000;
 
   font-size: 12px;
-
-  color: #000;
 }
 
-.task-input-row input::placeholder {
-  color: #999;
-}
+.register {
+  display: block;
 
-.task-input-row input:focus {
-  background: #f8f8f8;
-}
+  margin: 6px auto 0;
 
+  padding: 12px 46px;
 
-/* =========================================================
-   REGISTER
-========================================================= */
-
-.register-button {
-  width: 100%;
-  height: 52px;
-
-  margin-top: 7px;
-
-  border: 3px solid #000;
-  border-radius: 13px;
+  border: 0;
+  border-radius: 15px;
 
   background: #000;
   color: #fff;
 
-  font-family: "Skranji", cursive;
+  font-family: inherit;
 
   font-size: 17px;
 
   cursor: pointer;
 }
 
-.register-button:hover {
-  background: #222;
-}
-
-.register-button:disabled {
+.register:disabled {
   opacity: 0.55;
-
-  cursor: not-allowed;
-}
-
-
-/* =========================================================
-   FORM MESSAGE
-========================================================= */
-
-.form-message {
-  min-height: 20px;
-
-  margin-top: 12px;
-
-  text-align: center;
-
-  font-size: 13px;
-}
-
-.form-message.success {
-  color: #168500;
-}
-
-.form-message.error {
-  color: #e00000;
+  cursor: wait;
 }
 
 
 /* =========================================================
    PERSONALITY CARD
-========================================================= */
+   ========================================================= */
 
 .personality-card {
   position: absolute;
@@ -410,78 +401,78 @@ body {
   width: 227px;
   height: 245px;
 
-  background: #fff;
+  padding: 7px;
+
+  background: #ddd;
 
   border: 4px solid #000;
-  border-radius: 24px;
+  border-radius: 28px;
 
-  padding: 15px;
+  box-shadow: 0 5px 0 #000;
 
   text-align: center;
 
-  overflow: hidden;
+  z-index: 6;
 }
 
-.personality-heading {
-  font-size: 13px;
-
-  margin-bottom: 7px;
-}
-
-.personality-image-wrap {
+.personality-card img {
   width: 100%;
-  height: 132px;
+  height: 185px;
+
+  display: block;
+
+  object-fit: cover;
+
+  border: 5px solid #000;
+  border-radius: 21px;
+}
+
+.personality-card div {
+  height: 33px;
 
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 
-  overflow: hidden;
+  padding: 0 8px;
+
+  font-size: 14px;
 }
 
-.personality-image-wrap img {
-  width: 100%;
-  height: 100%;
-
-  object-fit: contain;
-
-  display: block;
+.personality-card div span {
+  font-size: 13px;
 }
 
-.personality-name {
-  margin-top: 5px;
-
-  font-size: 17px;
+.personality-card div strong {
+  font-size: 18px;
 }
 
-.download-button {
-  width: 100%;
-  height: 35px;
+.personality-card > button {
+  position: absolute;
 
-  margin-top: 6px;
+  left: 50%;
+  bottom: 5px;
+
+  transform: translateX(-50%);
+
+  width: 53px;
+  height: 34px;
 
   border: 2px solid #000;
-  border-radius: 9px;
+  border-radius: 8px;
 
-  background: #bce900;
-  color: #000;
+  background: #fff;
 
-  font-family: "Skranji", cursive;
-
-  font-size: 11px;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
 
   cursor: pointer;
 }
 
-.download-button:hover {
-  background: #000;
-  color: #fff;
-}
-
 
 /* =========================================================
-   LEADERBOARD
-========================================================= */
+   MOSSURIS BOARD
+   ========================================================= */
 
 .leaderboard {
   position: absolute;
@@ -492,207 +483,232 @@ body {
   width: 508px;
   height: 639px;
 
-  background: #fff;
-
-  border: 4px solid #000;
-  border-radius: 28px;
-
-  padding: 25px;
-
-  overflow: hidden;
+  z-index: 4;
 }
 
-.leaderboard-header {
-  display: flex;
+.leaderboard h2 {
+  height: 49px;
 
-  align-items: center;
-  justify-content: space-between;
-
-  margin-bottom: 18px;
-}
-
-.leaderboard-header h2 {
-  margin: 0;
-
-  font-size: 24px;
-}
-
-.board-controls {
-  display: flex;
-
-  gap: 7px;
-}
-
-.board-controls button {
-  width: 35px;
-  height: 35px;
-
-  border: 2px solid #000;
-  border-radius: 9px;
-
-  background: #bce900;
-
-  font-family: Arial, sans-serif;
-  font-size: 25px;
-  line-height: 1;
-
-  cursor: pointer;
-}
-
-.board-controls button:hover {
-  background: #000;
-  color: #fff;
-}
-
-
-/* =========================================================
-   BOARD TABLE
-========================================================= */
-
-.board-table {
-  width: 100%;
-
-  overflow: hidden;
-}
-
-.board-row {
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    1.25fr
-    0.9fr;
-
-  gap: 10px;
-
-  align-items: center;
-
-  min-height: 48px;
-
-  border-bottom: 2px solid #000;
-
-  font-size: 11px;
-}
-
-.board-head {
-  min-height: 43px;
-
-  border-bottom: 4px solid #000;
-
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.board-body {
-  max-height: 520px;
-
-  overflow-y: auto;
-
-  scrollbar-width: thin;
-}
-
-.board-body::-webkit-scrollbar {
-  width: 5px;
-}
-
-.board-body::-webkit-scrollbar-thumb {
-  background: #000;
-}
-
-.board-empty {
-  padding: 30px 5px;
+  margin: 0 0 6px;
 
   text-align: center;
 
-  font-size: 13px;
-}
-
-.board-wallet {
-  overflow: hidden;
-
-  text-overflow: ellipsis;
+  font-size: 37px;
+  line-height: 1.1;
 
   white-space: nowrap;
 }
 
+.table {
+  width: 100%;
+  height: 575px;
 
-/* =========================================================
-   SUCCESS MODAL
-========================================================= */
+  background: #fff;
 
-.modal {
-  position: fixed;
+  border: 6px solid #000;
+  border-radius: 34px;
 
-  inset: 0;
+  overflow: hidden;
 
-  z-index: 9999;
+  box-shadow: 0 8px 0 #000;
+}
+
+.thead,
+.tr {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1.3fr
+    0.9fr;
+}
+
+.thead span,
+.tr span {
+  min-width: 0;
+
+  padding: 15px 7px;
+
+  border-right: 4px solid #000;
+  border-bottom: 4px solid #000;
+
+  text-align: center;
+
+  font-size: 17px;
+  line-height: 1.1;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+.thead span:last-child,
+.tr span:last-child {
+  border-right: 0;
+}
+
+.tbody {
+  height: calc(100% - 57px);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tbody .tr:last-child span {
+  border-bottom: 0;
+}
+
+.tr span {
+  min-height: 45px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 }
 
-.modal.hidden {
-  display: none;
+.scroll-buttons {
+  height: 39px;
+
+  margin-top: 10px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 8px;
 }
 
-.modal-backdrop {
-  position: absolute;
+.scroll-buttons button {
+  width: 46px;
+  height: 39px;
+
+  border: 3px solid #000;
+  border-radius: 10px;
+
+  background: #fff;
+
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+.toast {
+  position: fixed;
+
+  left: 50%;
+  bottom: 25px;
+
+  transform:
+    translate(-50%, 20px);
+
+  background: #000;
+  color: #fff;
+
+  padding: 10px 18px;
+
+  border-radius: 9px;
+
+  font-size: 12px;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition: 0.2s;
+
+  z-index: 2000;
+}
+
+.toast.show {
+  opacity: 1;
+
+  transform:
+    translate(-50%, 0);
+}
+
+
+/* =========================================================
+   SUCCESS POPUP
+   ========================================================= */
+
+.success-overlay {
+  position: fixed;
 
   inset: 0;
+
+  z-index: 1000;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 20px;
 
   background: rgba(0, 0, 0, 0.65);
 }
 
-.modal-card {
+.success-overlay[hidden] {
+  display: none;
+}
+
+.success-modal {
   position: relative;
 
-  z-index: 2;
+  width: min(500px, 94vw);
 
-  width: 390px;
+  padding: 25px;
 
   background: #fff;
 
-  border: 4px solid #000;
-  border-radius: 25px;
+  border: 6px solid #000;
 
-  padding: 25px;
+  border-radius: 30px;
+
+  box-shadow: 0 8px #000;
 
   text-align: center;
 }
 
-.modal-card img {
-  width: 100%;
-  max-height: 260px;
+.success-modal img {
+  width: 220px;
+  height: 220px;
 
-  object-fit: contain;
+  object-fit: cover;
 
-  display: block;
+  border: 4px solid #000;
 
-  margin: 0 auto 15px;
+  border-radius: 22px;
 }
 
-.modal-card h2 {
-  margin: 0 0 8px;
+.success-modal h2 {
+  margin: 15px 0 8px;
 
-  font-size: 24px;
+  font-size: 28px;
 }
 
-.modal-card p {
+.success-modal p {
   margin: 0;
 
-  font-size: 17px;
+  font-size: 22px;
 }
 
-.modal-close {
+.close {
   position: absolute;
 
   right: 12px;
-  top: 10px;
+  top: 5px;
 
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
 
   border: 0;
 
@@ -700,242 +716,199 @@ body {
 
   font-family: Arial, sans-serif;
 
-  font-size: 30px;
+  font-size: 34px;
 
   cursor: pointer;
 }
 
 
 /* =========================================================
-   DESKTOP SCALING
-========================================================= */
-
-@media (max-width: 1728px) {
-
-  .task-page {
-    transform: scale(
-      min(
-        calc(100vw / 1728),
-        calc(100vh / 1117)
-      )
-    );
-
-    transform-origin: top left;
-  }
-
-  body {
-    min-height: 100vh;
-  }
-}
-
-
-/* =========================================================
    TABLET / MOBILE
-========================================================= */
+   ========================================================= */
 
 @media (max-width: 900px) {
 
   body {
     overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .task-page {
+    position: relative;
+
+    left: auto;
+    top: auto;
+
     width: 100%;
     height: auto;
 
     min-height: 100vh;
 
+    margin: 0;
+
+    padding: 20px 15px 40px;
+
     transform: none;
 
-    padding: 25px 18px 50px;
+    overflow: visible;
 
     display: flex;
 
     flex-direction: column;
 
-    align-items: center;
-
-    gap: 20px;
+    gap: 22px;
   }
 
+  .character-carousel,
+  .status-area,
+  .task-card,
+  .personality-card,
+  .leaderboard {
 
-  .character-carousel {
     position: relative;
 
     left: auto;
     top: auto;
+    right: auto;
 
-    width: min(100%, 360px);
-    height: 220px;
-
-    order: 1;
-  }
-
-  .character-frame {
-    width: 250px;
-    height: 220px;
-  }
-
-
-  .checker {
-    position: relative;
-
-    left: auto;
-    top: auto;
-
-    width: min(100%, 628px);
-
-    order: 2;
-  }
-
-
-  .task-card {
-    position: relative;
-
-    left: auto;
-    top: auto;
-
-    width: min(100%, 511px);
+    width: 100%;
     height: auto;
 
-    order: 3;
+    min-width: 0;
+    min-height: 0;
+
+    max-width: 600px;
+
+    margin: 0 auto;
   }
 
+  .character-carousel {
+    height: 230px;
+  }
+
+  .character-window {
+    width: 120px;
+    height: 120px;
+  }
+
+  .status-area {
+    height: auto;
+  }
+
+  .status-check {
+    flex-direction: column;
+
+    gap: 10px;
+
+    height: auto;
+  }
+
+  .status-check span {
+    font-size: 30px;
+  }
+
+  .status-check input {
+    width: 100%;
+
+    max-width: 400px;
+
+    height: 75px;
+
+    flex: 0 0 auto;
+  }
+
+  .status-check button {
+    width: 150px;
+
+    flex: 0 0 auto;
+  }
+
+  .status-result {
+    position: relative;
+
+    right: auto;
+    top: auto;
+
+    margin: 10px auto;
+  }
+
+  .task-card {
+    height: auto;
+
+    min-height: 570px;
+
+    padding: 18px;
+  }
 
   .personality-card {
-    position: relative;
-
-    left: auto;
-    top: auto;
-
-    width: min(100%, 300px);
-    height: 270px;
-
-    order: 4;
+    width: 227px;
+    height: 245px;
   }
-
 
   .leaderboard {
-    position: relative;
+    height: auto;
 
-    left: auto;
-    top: auto;
-
-    width: min(100%, 508px);
-    height: 600px;
-
-    order: 5;
+    min-height: 500px;
   }
 
+  .leaderboard h2 {
+    font-size: 28px;
+  }
+
+  .table {
+    height: 430px;
+  }
 }
 
 
 /* =========================================================
    SMALL MOBILE
-========================================================= */
+   ========================================================= */
 
 @media (max-width: 500px) {
 
   .task-page {
-    padding: 18px 12px 40px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   .character-carousel {
     height: 190px;
   }
 
-  .character-frame {
-    width: 210px;
-    height: 190px;
+  .character-window {
+    width: 105px;
+    height: 105px;
+
+    border-width: 6px;
   }
 
-  .character-arrow {
-    width: 36px;
-    height: 36px;
-
-    font-size: 25px;
-  }
-
-
-  .checker {
-    height: 62px;
-
-    border-width: 3px;
-
-    border-radius: 15px;
-  }
-
-  .checker input {
-    height: 50px;
-
-    padding: 0 12px;
-
-    font-size: 15px;
-  }
-
-  .checker button {
-    width: 82px;
-    height: 50px;
-
-    border-radius: 10px;
-
-    font-size: 13px;
-  }
-
-
-  .task-card {
-    padding: 25px 20px;
-
-    border-radius: 22px;
-  }
-
-  .task-title {
+  .character-carousel > button {
     font-size: 32px;
   }
 
-  .task-row {
-    flex-direction: column;
-
-    align-items: stretch;
-
-    gap: 7px;
+  .task-card {
+    min-height: 550px;
   }
 
-  .task-action {
-    width: 100%;
+  .dark-row {
+    min-height: 52px;
   }
 
-  .task-input-row input {
-    width: 100%;
+  .dark-row input,
+  .dark-row a {
+    height: 37px;
   }
 
-
-  .leaderboard {
-    padding: 18px;
-
-    border-radius: 22px;
+  .leaderboard h2 {
+    font-size: 24px;
   }
 
-  .leaderboard-header h2 {
-    font-size: 19px;
+  .thead span,
+  .tr span {
+    font-size: 12px;
+
+    padding-left: 4px;
+    padding-right: 4px;
   }
-
-  .board-row {
-    grid-template-columns:
-      0.9fr
-      1.2fr
-      0.8fr;
-
-    font-size: 9px;
-
-    gap: 5px;
-  }
-
-
-  .modal-card {
-    width: calc(100% - 30px);
-
-    padding: 20px;
-  }
-
 }
