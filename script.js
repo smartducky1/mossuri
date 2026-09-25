@@ -1,24 +1,710 @@
-const characters=[
- {name:'Goofy',file:'/assets/goofy.jpg'},
- {name:'Smart',file:'/assets/smart.jpg'},
- {name:'Hyper',file:'/assets/hyper.jpg'}
+/* =========================================================
+   MOSSURI
+   ========================================================= */
+
+const characters = [
+  {
+    name: "Goofy",
+    file: "/assets/goofy.jpg"
+  },
+  {
+    name: "Smart",
+    file: "/assets/smart.jpg"
+  },
+  {
+    name: "Hyper",
+    file: "/assets/hyper.jpg"
+  }
 ];
-let selected=1;
-const $=id=>document.getElementById(id);
-function renderCharacter(){const c=characters[selected];$('selectorImage').src=c.file;$('selectorImage').alt=c.name;$('personalityImage').src=c.file;$('personalityImage').alt=c.name+' personality';$('personalityName').textContent=c.name}
-$('prevChar').onclick=()=>{selected=(selected-1+characters.length)%characters.length;renderCharacter()};
-$('nextChar').onclick=()=>{selected=(selected+1)%characters.length;renderCharacter()};
-$('downloadBtn').onclick=()=>{const c=characters[selected];const a=document.createElement('a');a.href=c.file;a.download=`MOSSURI-${c.name}.jpg`;document.body.appendChild(a);a.click();a.remove()};
-$('followBtn').onclick=()=>window.open('https://x.com/mossuris','_blank','noopener,noreferrer');
-$('likeGo').onclick=()=>window.open('https://x.com/mossuris','_blank','noopener,noreferrer');
-function validEvm(w){return /^0x[a-fA-F0-9]{40}$/.test(w.trim())}
-function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
-async function checkWallet(){const w=$('checkWallet').value.trim();if(!validEvm(w)){setCheck(false);return}try{const r=await fetch('/api/check',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({wallet:w})});const d=await r.json();setCheck(!!d.onList)}catch(e){setCheck(false)}}
-function setCheck(yes){$('checkResult').textContent=yes?'🟢 YES — wallet is on the list':'🔴 NO — wallet is not on the list';$('checkResult').className='check-result '+(yes?'yes':'no')}
-$('checkBtn').onclick=checkWallet;
-async function register(){const username=$('username').value.trim().replace(/^@/,'');const wallet=$('wallet').value.trim();const quoteUrl=$('quoteUrl').value.trim();const tagUrl=$('tagUrl').value.trim();if(!username){toast('Enter your X username');return}if(!validEvm(wallet)){toast('Enter a valid EVM wallet');return}if(!quoteUrl||!tagUrl){toast('Complete all task links');return}const btn=$('registerBtn');btn.disabled=true;btn.textContent='SENDING...';try{const payload={username,wallet,personality:characters[selected].name,quoteUrl,tagUrl};const r=await fetch('/api/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Submission failed');$('successModal').classList.remove('hidden');$('username').value='';$('wallet').value='';$('quoteUrl').value='';$('tagUrl').value='';await loadBoard()}catch(e){toast(e.message||'Could not save your application')}finally{btn.disabled=false;btn.textContent='REGISTER'}}
-$('registerBtn').onclick=register;
-$('closeModal').onclick=()=>$('successModal').classList.add('hidden');$('successModal').onclick=e=>{if(e.target.id==='successModal')$('successModal').classList.add('hidden')};
-async function loadBoard(){try{const r=await fetch('/api/board');const d=await r.json();if(!d.ok)return;$('boardRows').innerHTML=(d.rows||[]).map(x=>`<div class="board-row"><span>${escapeHtml(x.username)}</span><span>${escapeHtml(x.wallet)}</span></div>`).join('')}catch(e){}}
-function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-renderCharacter();loadBoard();
+
+let selected = 0;
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+const $ = (id) => document.getElementById(id);
+
+
+function validEvm(wallet) {
+  return /^0x[a-fA-F0-9]{40}$/.test(
+    wallet.trim()
+  );
+}
+
+
+function escapeHtml(value) {
+  return String(value).replace(
+    /[&<>'"]/g,
+    (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "'": "&#39;",
+      '"': "&quot;"
+    })[char]
+  );
+}
+
+
+function toast(message) {
+  const element = $("toast");
+
+  element.textContent = message;
+
+  element.classList.add("show");
+
+  clearTimeout(toast.timer);
+
+  toast.timer = setTimeout(() => {
+    element.classList.remove("show");
+  }, 2400);
+}
+
+
+/* =========================================================
+   CHARACTER SELECTOR
+   ========================================================= */
+
+function renderCharacter() {
+
+  const character = characters[selected];
+
+  $("selectorImage").src = character.file;
+
+  $("selectorImage").alt =
+    `${character.name} personality`;
+
+  $("personalityImage").src =
+    character.file;
+
+  $("personalityImage").alt =
+    `${character.name} personality`;
+
+  $("personalityName").textContent =
+    character.name;
+}
+
+
+$("prevChar").addEventListener(
+  "click",
+  () => {
+
+    selected =
+      (selected - 1 + characters.length)
+      % characters.length;
+
+    renderCharacter();
+  }
+);
+
+
+$("nextChar").addEventListener(
+  "click",
+  () => {
+
+    selected =
+      (selected + 1)
+      % characters.length;
+
+    renderCharacter();
+  }
+);
+
+
+/* =========================================================
+   DOWNLOAD CHARACTER
+   ========================================================= */
+
+$("downloadBtn").addEventListener(
+  "click",
+  async () => {
+
+    const character =
+      characters[selected];
+
+    try {
+
+      const response =
+        await fetch(character.file);
+
+      const blob =
+        await response.blob();
+
+      const url =
+        URL.createObjectURL(blob);
+
+      const link =
+        document.createElement("a");
+
+      link.href = url;
+
+      link.download =
+        `MOSSURI-${character.name}.jpg`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      URL.revokeObjectURL(url);
+
+    } catch (error) {
+
+      window.open(
+        character.file,
+        "_blank"
+      );
+    }
+  }
+);
+
+
+/* =========================================================
+   X TASKS
+   ========================================================= */
+
+const X_URL =
+  "https://x.com/mossuris";
+
+
+document.querySelectorAll(
+  'a[href="https://x.com/mossuris"]'
+).forEach((link) => {
+
+  link.addEventListener(
+    "click",
+    () => {
+      // Normal link behaviour.
+    }
+  );
+
+});
+
+
+/* =========================================================
+   WALLET CHECKER
+   ========================================================= */
+
+async function checkWallet() {
+
+  const wallet =
+    $("checkWallet")
+      .value
+      .trim();
+
+  const result =
+    $("checkResult");
+
+  if (!validEvm(wallet)) {
+
+    result.textContent =
+      "🔴 NO — wallet is not on the list";
+
+    result.className =
+      "status-result no";
+
+    return;
+  }
+
+  result.textContent =
+    "CHECKING...";
+
+  result.className =
+    "status-result";
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/check",
+        {
+          method: "POST",
+
+          headers: {
+            "content-type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            wallet
+          })
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Unable to check wallet"
+      );
+    }
+
+
+    if (data.onList) {
+
+      result.textContent =
+        "🟢 YES — wallet is on the list";
+
+      result.className =
+        "status-result yes";
+
+    } else {
+
+      result.textContent =
+        "🔴 NO — wallet is not on the list";
+
+      result.className =
+        "status-result no";
+    }
+
+  } catch (error) {
+
+    result.textContent =
+      "🔴 NO — wallet is not on the list";
+
+    result.className =
+      "status-result no";
+  }
+}
+
+
+$("checkBtn").addEventListener(
+  "click",
+  checkWallet
+);
+
+
+$("checkWallet").addEventListener(
+  "keydown",
+  (event) => {
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+
+      checkWallet();
+    }
+  }
+);
+
+
+/* =========================================================
+   SUCCESS POPUP
+   ========================================================= */
+
+function showSuccess() {
+
+  /*
+   * Always use the supplied success-popup image.
+   * Add cache-busting so browser caching doesn't
+   * cause an old broken image to remain visible.
+   */
+
+  const image =
+    $("successImage");
+
+  image.src =
+    `/assets/success-popup.png?v=${Date.now()}`;
+
+  $("successOverlay").hidden = false;
+}
+
+
+function closeSuccess() {
+
+  $("successOverlay").hidden = true;
+}
+
+
+$("closeSuccess").addEventListener(
+  "click",
+  closeSuccess
+);
+
+
+$("successOverlay").addEventListener(
+  "click",
+  (event) => {
+
+    if (
+      event.target ===
+      $("successOverlay")
+    ) {
+      closeSuccess();
+    }
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key === "Escape" &&
+      !$("successOverlay").hidden
+    ) {
+      closeSuccess();
+    }
+  }
+);
+
+
+/* =========================================================
+   REGISTER / SUBMIT
+   ========================================================= */
+
+async function register(event) {
+
+  event.preventDefault();
+
+
+  const username =
+    $("username")
+      .value
+      .trim()
+      .replace(/^@/, "");
+
+
+  const wallet =
+    $("wallet")
+      .value
+      .trim();
+
+
+  const quoteUrl =
+    $("quoteUrl")
+      .value
+      .trim();
+
+
+  const tagUrl =
+    $("tagUrl")
+      .value
+      .trim();
+
+
+  const serverError =
+    $("serverError");
+
+
+  serverError.textContent = "";
+
+
+  if (!username) {
+
+    toast(
+      "Enter your X username"
+    );
+
+    $("username").focus();
+
+    return;
+  }
+
+
+  if (!validEvm(wallet)) {
+
+    toast(
+      "Enter a valid EVM wallet"
+    );
+
+    $("wallet").focus();
+
+    return;
+  }
+
+
+  if (!quoteUrl) {
+
+    toast(
+      "Add your Quote Tweet link"
+    );
+
+    $("quoteUrl").focus();
+
+    return;
+  }
+
+
+  if (!tagUrl) {
+
+    toast(
+      "Add your comment link"
+    );
+
+    $("tagUrl").focus();
+
+    return;
+  }
+
+
+  const button =
+    $("registerBtn");
+
+  button.disabled = true;
+
+  button.textContent =
+    "SENDING...";
+
+
+  try {
+
+    const payload = {
+
+      username,
+
+      wallet,
+
+      personality:
+        characters[selected].name,
+
+      quoteUrl,
+
+      tagUrl
+
+    };
+
+
+    const response =
+      await fetch(
+        "/api/submit",
+        {
+          method: "POST",
+
+          headers: {
+            "content-type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(payload)
+        }
+      );
+
+
+    let data = {};
+
+    try {
+
+      data =
+        await response.json();
+
+    } catch {
+      data = {};
+    }
+
+
+    if (
+      !response.ok ||
+      !data.ok
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Could not save your application."
+      );
+    }
+
+
+    /*
+     * Clear form.
+     */
+
+    $("username").value = "";
+
+    $("wallet").value = "";
+
+    $("quoteUrl").value = "";
+
+    $("tagUrl").value = "";
+
+
+    /*
+     * Show success popup.
+     */
+
+    showSuccess();
+
+
+    /*
+     * Refresh board.
+     */
+
+    await loadBoard();
+
+
+  } catch (error) {
+
+    const message =
+      error.message ||
+      "Could not save your application.";
+
+    serverError.textContent =
+      message;
+
+    toast(message);
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "REGISTER";
+  }
+}
+
+
+$("applicationForm").addEventListener(
+  "submit",
+  register
+);
+
+
+/* =========================================================
+   MOSSURIS BOARD
+   ========================================================= */
+
+async function loadBoard() {
+
+  const container =
+    $("boardRows");
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/board",
+        {
+          method: "GET",
+          cache: "no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok ||
+      !data.ok
+    ) {
+      throw new Error(
+        data.error ||
+        "Could not load board"
+      );
+    }
+
+
+    const rows =
+      Array.isArray(data.rows)
+        ? data.rows
+        : [];
+
+
+    if (!rows.length) {
+
+      container.innerHTML = `
+        <div class="tr">
+          <span>—</span>
+          <span>—</span>
+          <span>—</span>
+        </div>
+      `;
+
+      return;
+    }
+
+
+    container.innerHTML =
+      rows
+        .map((row) => {
+
+          return `
+            <div class="tr">
+
+              <span>
+                ${escapeHtml(
+                  row.username ||
+                  row.xUsername ||
+                  ""
+                )}
+              </span>
+
+              <span>
+                ${escapeHtml(
+                  row.wallet ||
+                  ""
+                )}
+              </span>
+
+              <span>
+                ${escapeHtml(
+                  row.personality ||
+                  ""
+                )}
+              </span>
+
+            </div>
+          `;
+
+        })
+        .join("");
+
+
+  } catch (error) {
+
+    /*
+     * Keep board empty if the API
+     * isn't configured yet.
+     */
+
+    container.innerHTML = "";
+  }
+}
+
+
+/* =========================================================
+   BOARD SCROLL BUTTONS
+   ========================================================= */
+
+$("boardUp").addEventListener(
+  "click",
+  () => {
+
+    $("boardRows").scrollBy({
+      top: -220,
+      behavior: "smooth"
+    });
+  }
+);
+
+
+$("boardDown").addEventListener(
+  "click",
+  () => {
+
+    $("boardRows").scrollBy({
+      top: 220,
+      behavior: "smooth"
+    });
+  }
+);
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+renderCharacter();
+
+loadBoard();
