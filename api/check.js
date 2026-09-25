@@ -1,0 +1,2 @@
+const {body}=require('./_utils');
+module.exports=async(req,res)=>{if(req.method!=='POST')return res.status(405).json({onList:false});try{const p=await body(req);const w=String(p.wallet||'').trim();if(!/^0x[a-fA-F0-9]{40}$/.test(w))return res.status(200).json({onList:false});const url=process.env.GOOGLE_APPS_SCRIPT_URL+'?action=check&wallet='+encodeURIComponent(w);const r=await fetch(url);const d=await r.json();return res.status(200).json({onList:!!d.onList})}catch(e){return res.status(200).json({onList:false})}};

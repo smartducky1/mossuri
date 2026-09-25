@@ -1,0 +1,1 @@
+module.exports=async(req,res)=>{try{const url=process.env.GOOGLE_APPS_SCRIPT_URL+'?action=board';const r=await fetch(url);const d=await r.json();return res.status(200).json({ok:true,rows:Array.isArray(d.rows)?d.rows:[]})}catch(e){return res.status(200).json({ok:false,rows:[]})}};
