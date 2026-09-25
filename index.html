@@ -1,12 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  >
+    content="width=device-width, initial-scale=1.0"
+  />
 
   <title>MOSSURI</title>
 
@@ -25,333 +25,382 @@
 
   <main class="task-page">
 
-    <!-- CHARACTER SELECTOR -->
+    <!-- =========================================
+         CHARACTER CAROUSEL
+    ========================================== -->
+
     <section class="character-carousel">
 
       <button
+        class="character-arrow character-arrow-left"
+        id="prevCharacter"
         type="button"
-        id="prevChar"
         aria-label="Previous personality"
       >
-        ◀
+        ‹
       </button>
 
-      <div class="character-window">
+      <div class="character-frame">
         <img
-          id="selectorImage"
+          id="characterImage"
           src="/assets/goofy.jpg"
           alt="Goofy personality"
         >
       </div>
 
       <button
+        class="character-arrow character-arrow-right"
+        id="nextCharacter"
         type="button"
-        id="nextChar"
         aria-label="Next personality"
       >
-        ▶
+        ›
       </button>
 
     </section>
 
 
-    <!-- WALLET CHECKER -->
-    <section class="status-area">
+    <!-- =========================================
+         EVM CHECKER
+    ========================================== -->
 
-      <div class="status-check">
+    <section class="checker">
 
-        <span>CHECK YOUR SPOT</span>
+      <input
+        type="text"
+        id="checkWallet"
+        placeholder="Paste EVM"
+        autocomplete="off"
+        aria-label="Paste EVM wallet"
+      >
 
-        <input
-          id="checkWallet"
-          type="text"
-          autocomplete="off"
-          placeholder="Paste EVM"
-          aria-label="Paste EVM wallet"
-        >
-
-        <button
-          type="button"
-          id="checkBtn"
-        >
-          CHECK
-        </button>
-
-      </div>
+      <button
+        id="checkBtn"
+        type="button"
+      >
+        CHECK
+      </button>
 
       <div
         id="checkResult"
-        class="status-result"
+        class="check-result"
         aria-live="polite"
       ></div>
 
     </section>
 
 
-    <!-- WHITELIST TASKS -->
+    <!-- =========================================
+         WHITELIST TASK CARD
+    ========================================== -->
+
     <section class="task-card">
 
-      <form id="applicationForm" novalidate>
+      <h1 class="task-title">
+        MOSSURI
+      </h1>
 
-        <!-- FOLLOW X -->
-        <div class="task-row">
+      <p class="task-subtitle">
+        Complete the tasks below
+      </p>
 
-          <label for="username">
-            FOLLOW X
-          </label>
 
-          <div class="dark-row">
+      <!-- Follow X -->
 
-            <input
-              id="username"
-              type="text"
-              autocomplete="off"
-              placeholder="Drop your X username"
-            >
+      <div class="task-row">
 
-            <a
-              href="https://x.com/mossuris"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              FOLLOW
-            </a>
-
-          </div>
-
+        <div class="task-label">
+          Follow X
         </div>
 
-
-        <!-- LIKE + RT -->
-        <div class="task-row">
-
-          <label>
-            LIKE &amp; RT PINNED POST
-          </label>
-
-          <div class="dark-row single">
-
-            <a
-              href="https://x.com/mossuris"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GO TO X
-            </a>
-
-          </div>
-
-        </div>
-
-
-        <!-- QUOTE TWEET -->
-        <div class="task-row">
-
-          <label for="quoteUrl">
-            QT PINNED POST WITH YOUR SELECTED CHARACTER
-          </label>
-
-          <div class="dark-row">
-
-            <input
-              id="quoteUrl"
-              type="url"
-              autocomplete="off"
-              placeholder="Link to QT https://x.com/status..."
-            >
-
-          </div>
-
-        </div>
-
-
-        <!-- TAG 3 FRIENDS -->
-        <div class="task-row">
-
-          <label for="tagUrl">
-            TAG 3 FRIENDS IN PINNED POST COMMENT
-          </label>
-
-          <div class="dark-row">
-
-            <input
-              id="tagUrl"
-              type="url"
-              autocomplete="off"
-              placeholder="Link to comment https://x.com/status..."
-            >
-
-          </div>
-
-        </div>
-
-
-        <!-- WALLET -->
-        <div class="task-row">
-
-          <label for="wallet">
-            SUBMIT EVM WALLET
-          </label>
-
-          <div class="dark-row">
-
-            <input
-              id="wallet"
-              type="text"
-              autocomplete="off"
-              placeholder="0x..."
-            >
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="serverError"
-          class="server-error"
-          aria-live="polite"
-        ></div>
-
-
-        <button
-          type="submit"
-          class="register"
-          id="registerBtn"
+        <a
+          class="task-action"
+          href="https://x.com/mossuris"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          REGISTER
-        </button>
+          Follow @mossuris
+        </a>
 
-      </form>
+      </div>
+
+
+      <!-- Like & RT -->
+
+      <div class="task-row">
+
+        <div class="task-label">
+          Like &amp; RT
+        </div>
+
+        <a
+          class="task-action"
+          href="https://x.com/mossuris"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Go to X
+        </a>
+
+      </div>
+
+
+      <!-- Quote -->
+
+      <div class="task-row task-input-row">
+
+        <label
+          class="task-label"
+          for="quoteUrl"
+        >
+          Quote Tweet
+        </label>
+
+        <input
+          id="quoteUrl"
+          type="url"
+          placeholder="Paste quote tweet link"
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <!-- Tag -->
+
+      <div class="task-row task-input-row">
+
+        <label
+          class="task-label"
+          for="tagUrl"
+        >
+          Tag 3 Friends
+        </label>
+
+        <input
+          id="tagUrl"
+          type="url"
+          placeholder="Paste post link"
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <!-- Username -->
+
+      <div class="task-row task-input-row">
+
+        <label
+          class="task-label"
+          for="username"
+        >
+          X Username
+        </label>
+
+        <input
+          id="username"
+          type="text"
+          placeholder="@username"
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <!-- Wallet -->
+
+      <div class="task-row task-input-row">
+
+        <label
+          class="task-label"
+          for="wallet"
+        >
+          EVM Wallet
+        </label>
+
+        <input
+          id="wallet"
+          type="text"
+          placeholder="0x..."
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <!-- Register -->
+
+      <button
+        id="registerBtn"
+        class="register-button"
+        type="button"
+      >
+        REGISTER
+      </button>
+
+
+      <div
+        id="formMessage"
+        class="form-message"
+        aria-live="polite"
+      ></div>
 
     </section>
 
 
-    <!-- SELECTED PERSONALITY -->
+    <!-- =========================================
+         SELECTED PERSONALITY
+    ========================================== -->
+
     <section class="personality-card">
 
-      <img
-        id="personalityImage"
-        src="/assets/goofy.jpg"
-        alt="Goofy personality"
-      >
+      <div class="personality-heading">
+        SELECTED
+      </div>
 
-      <div>
+      <div class="personality-image-wrap">
 
-        <span>Personality</span>
-
-        <strong id="personalityName">
-          Goofy
-        </strong>
+        <img
+          id="selectedPersonalityImage"
+          src="/assets/goofy.jpg"
+          alt="Selected personality"
+        >
 
       </div>
 
-      <button
-        type="button"
-        id="downloadBtn"
-        aria-label="Download selected character"
+      <div
+        id="selectedPersonalityName"
+        class="personality-name"
       >
-        ⇩
+        GOOFY
+      </div>
+
+      <button
+        id="downloadCharacter"
+        class="download-button"
+        type="button"
+      >
+        DOWNLOAD
       </button>
 
     </section>
 
 
-    <!-- MOSSURIS BOARD -->
+    <!-- =========================================
+         MOSSURIS BOARD
+    ========================================== -->
+
     <section class="leaderboard">
 
-      <h2>Mossuris Board</h2>
+      <div class="leaderboard-header">
 
-      <div class="table">
+        <h2>
+          MOSSURIS BOARD
+        </h2>
 
-        <div class="thead">
+        <div class="board-controls">
 
-          <span>Username</span>
-          <span>Wallet</span>
-          <span>Personality</span>
+          <button
+            id="boardPrev"
+            type="button"
+            aria-label="Previous board entries"
+          >
+            ‹
+          </button>
+
+          <button
+            id="boardNext"
+            type="button"
+            aria-label="Next board entries"
+          >
+            ›
+          </button>
 
         </div>
 
-        <div
-          id="boardRows"
-          class="tbody"
-        ></div>
-
       </div>
 
-      <div class="scroll-buttons">
 
-        <button
-          type="button"
-          id="boardUp"
-          aria-label="Scroll board up"
-        >
-          ▲
-        </button>
+      <div class="board-table">
 
-        <button
-          type="button"
-          id="boardDown"
-          aria-label="Scroll board down"
+        <div class="board-row board-head">
+
+          <div>
+            USERNAME
+          </div>
+
+          <div>
+            WALLET
+          </div>
+
+          <div>
+            PERSONALITY
+          </div>
+
+        </div>
+
+
+        <div
+          id="boardBody"
+          class="board-body"
         >
-          ▼
-        </button>
+
+          <div class="board-empty">
+            No applications yet.
+          </div>
+
+        </div>
 
       </div>
 
     </section>
 
-  </main>
 
-
-  <!-- TOAST -->
-  <div
-    id="toast"
-    class="toast"
-    role="status"
-  ></div>
-
-
-  <!-- SUCCESS POPUP -->
-  <div
-    id="successOverlay"
-    class="success-overlay"
-    hidden
-  >
+    <!-- =========================================
+         SUCCESS POPUP
+    ========================================== -->
 
     <div
-      class="success-modal"
+      id="successModal"
+      class="modal hidden"
       role="dialog"
       aria-modal="true"
       aria-labelledby="successTitle"
     >
 
-      <button
-        type="button"
-        class="close"
-        id="closeSuccess"
-        aria-label="Close"
-      >
-        ×
-      </button>
+      <div class="modal-backdrop"></div>
 
-      <img
-        id="successImage"
-        src="/assets/success-popup.png"
-        alt="Mossuri success"
-      >
+      <div class="modal-card">
 
-      <h2 id="successTitle">
-        Application received
-      </h2>
+        <button
+          id="closeModal"
+          class="modal-close"
+          type="button"
+          aria-label="Close"
+        >
+          ×
+        </button>
 
-      <p>
-        You're on the list!
-      </p>
+        <img
+          id="successImage"
+          src="/assets/success-popup.png"
+          alt="Application successful"
+        >
+
+        <h2 id="successTitle">
+          Application received
+        </h2>
+
+        <p>
+          You're on the list!
+        </p>
+
+      </div>
 
     </div>
 
-  </div>
+  </main>
 
 
   <script src="/script.js"></script>
